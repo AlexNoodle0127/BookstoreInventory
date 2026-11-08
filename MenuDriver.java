@@ -61,7 +61,7 @@ public class MenuDriver {
                 case 1 -> listAllBooks(books);             // Implemented
                 case 2 -> searchByCourse(books, sc);        // Implemented
                 case 3 -> saveAllBooksReport(books);        // Implemented
-                case 4 -> saveCourseReport(books, sc);      // TODO: YOU implement this method
+                case 4 -> saveCourseReport(books, sc);      // Implemented
                 case 5 -> exportTopN(books, sc);            // TODO: YOU implement this method
                 case 6 -> exportPriceStats(books);          // TODO: YOU implement this method
                 case 0 -> System.out.println("Goodbye!");
@@ -100,7 +100,7 @@ public class MenuDriver {
         System.out.println("1) List all books");
         System.out.println("2) Search by course");
         System.out.println("3) Save ALL BOOKS report");
-        System.out.println("4) Save COURSE report (list + totals)   <-- YOU implement");
+        System.out.println("4) Save COURSE report (list + totals)");
         System.out.println("5) Export TOP-N most expensive          <-- YOU implement");
         System.out.println("6) Export PRICE STATS (min/max/avg/median) <-- YOU implement");
         System.out.println("0) Exit");
@@ -286,8 +286,93 @@ public class MenuDriver {
      *  - Print a friendly console message when done.
      */
     private static void saveCourseReport(ArrayList<Books> books, Scanner sc) {
-        
+        if (books.isEmpty()) {
+            System.out.println("No data loaded");
+            return;
+        }
 
+        System.out.print("Enter Course Code: ");
+        String courseCode = sc.nextLine().trim();
+
+        if (courseCode.isEmpty()) {
+            System.out.println("Invalid Course Code, was left blank.");
+            return;
+        }
+
+        ArrayList<Books> courseBooks = new ArrayList<>();
+
+        for (Books b : books) {
+            if (b.getCourseCode().equalsIgnoreCase(courseCode)) {
+                if (!seenByTitleAuthor(courseBooks, b)) {
+                    courseBooks.add(b);
+                }
+            }
+        }
+
+        if (courseBooks.isEmpty()) {
+            System.out.println("No books found for " + courseCode);
+            return;
+        }
+
+        double requiredTotal = 0.0;
+        double optionalTotal = 0.0;
+
+        String ts = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+
+        Path outPath = Paths.get(REPORTS_DIR, "course_" + courseCode.replace(" ", "_") + "_report.txt");
+
+        try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(outPath))) {
+
+            out.println("====================================================================================");
+            out.println("Course Report: " + courseCode);
+            out.println("Date: " + ts);
+            out.println("====================================================================================");
+
+            out.printf("%-30.30s %-22.22s %10s %-10.10s %-10.10s%n",
+                    "Title", "Author", "Price", "Course", "Tag");
+
+            out.println("====================================================================================");
+
+            for (Books b : courseBooks) {
+                String tag = b.isRequired() ? "[Required]" : "[Optional]";
+
+                out.printf("%-30.30s %-22.22s $%9.2f %-12s%n",
+                        b.getTitle(), b.getAuthor(), b.getPrice(), tag);
+
+                if (b.isRequired()) {
+                    requiredTotal += b.getPrice();
+                } else {
+                    optionalTotal += b.getPrice();
+                }
+
+            }
+
+            out.println("=====================================================================================");
+            out.printf("Required Total: $%.2f%n", requiredTotal);
+            out.printf("Optional Total: $%.2f%n", optionalTotal);
+            out.printf("Total: $%.2f%n", requiredTotal + optionalTotal);
+            out.print("=====================================================================================");
+
+            int Duplicates = 0;
+            int Count = 0;
+
+            for (Books b : books) {
+                if (b.getCourseCode().equalsIgnoreCase(courseCode)) {
+                    Count++;
+                }
+            }
+
+            Duplicates = Count - courseBooks.size();
+
+            out.printf("%n(%d books; %d duplicates)%n", courseBooks.size(), Duplicates);
+
+            System.out.println("Course report has been saved successfully to path: " + outPath);
+
+
+        } catch (IOException e) {
+            System.out.println("Error Writing report ---> " + e.getMessage());
+        }
     }
 
     // ===== Option 5 (YOU implement): export TOP-N most expensive =====
