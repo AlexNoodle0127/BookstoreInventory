@@ -1,0 +1,17 @@
+===========================================================
+TOP 8Most Expensive Books
+===========================================================
+Rank  Title                          Author                      Price
+============================================================
+1     Operating Systems: Three Easy  Remzi Arpaci-Dusseau   $   119.59
+2     Python Crash Course            Eric Matthes           $   117.30
+3     The Pragmatic Programmer       Andrew Hunt            $   116.89
+4     Deep Learning                  Ian Goodfellow         $   114.75
+5     Cracking the Coding Interview  Gayle Laakmann McDowel $   113.73
+6     Python Crash Course            Eric Matthes           $   112.99
+7     Operating Systems: Three Easy  Remzi Arpaci-Dusseau   $   110.39
+8     Artificial Intelligence: A Mod Stuart Russell         $   110.34
+============================================================
+Total Value of The -8 Most Expensive Books: $915.98
+Average of The -8 Most Expensive Books: $114.50
+============================================================

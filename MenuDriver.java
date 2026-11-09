@@ -62,7 +62,7 @@ public class MenuDriver {
                 case 2 -> searchByCourse(books, sc);        // Implemented
                 case 3 -> saveAllBooksReport(books);        // Implemented
                 case 4 -> saveCourseReport(books, sc);      // Implemented
-                case 5 -> exportTopN(books, sc);            // TODO: YOU implement this method
+                case 5 -> exportTopN(books, sc);            // Implemented
                 case 6 -> exportPriceStats(books);          // TODO: YOU implement this method
                 case 0 -> System.out.println("Goodbye!");
                 default -> System.out.println("Please choose a valid option (0–6).");
@@ -101,7 +101,7 @@ public class MenuDriver {
         System.out.println("2) Search by course");
         System.out.println("3) Save ALL BOOKS report");
         System.out.println("4) Save COURSE report (list + totals)");
-        System.out.println("5) Export TOP-N most expensive          <-- YOU implement");
+        System.out.println("5) Export TOP-N most expensive");
         System.out.println("6) Export PRICE STATS (min/max/avg/median) <-- YOU implement");
         System.out.println("0) Exit");
     }
@@ -389,12 +389,81 @@ public class MenuDriver {
      *  - Print a friendly console message when done.
      */
     private static void exportTopN(ArrayList<Books> books, Scanner sc) {
-        // TODO: Your code here.
-        // HINTS:
-        //   • Read/validate N with a loop (similar to readInt but with range checks).
-        //   • new ArrayList<>(books) gives you a shallow copy to sort.
-        //   • Comparator: (a, b) -> Double.compare(b.getPrice(), a.getPrice())
-        //   • Path out = Paths.get(REPORTS_DIR, "top" + N + ".txt")
+
+        if (books.isEmpty()) {
+            System.out.println("No data has been loaded");
+            return;
+        }
+
+        int N; //Establishes N as an integer
+
+        while (true) {
+
+            System.out.println("============================================");
+            System.out.print("How many books would you like to display?: ");
+
+            try {
+                N = Integer.parseInt(sc.nextLine().trim());
+
+                if (N >= 1 && N <= books.size()) {
+                    System.out.println("============================================");
+                    break;
+                } else {
+                    System.out.println("=====================================================================");
+                    System.out.println("Invalid Number, please enter a number between 1 and " + books.size());
+                    System.out.println("=====================================================================");
+                }
+
+            } catch (NumberFormatException e) {
+                System.out.println("============================================");
+                System.out.println("Invalid Number, please enter a valid number");
+                System.out.println("============================================");
+            }
+
+        }
+
+        ArrayList<Books> sortedBooks = new ArrayList<>(books);
+
+        sortedBooks.sort((a, b) -> Double.compare(b.getPrice(), a.getPrice()));
+
+        Path outPath = Paths.get(REPORTS_DIR, "Top" + N + "MostExpensiveBooks" + ".txt");
+
+        double total = 0.0;
+
+        try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(outPath))) {
+
+            out.println("===========================================================");
+            out.println("TOP " + N + "Most Expensive Books");
+            out.println("===========================================================");
+
+            out.printf("%-5s %-30.30s %-22.22s %10s%n",
+                    "Rank", "Title", "Author", "Price");
+
+            out.println("============================================================");
+
+            for (int i = 0; i < N; i++) {
+
+                Books b = sortedBooks.get(i);
+
+                out.printf("%-5d %-30.30s %-22.22s $%9.2f%n",
+                        i + 1, b.getTitle(), b.getAuthor(), b.getPrice());
+
+                total += b.getPrice();
+
+            }
+
+            double averagePrice = total / N;
+
+            out.println("============================================================");
+            out.printf("Total Value of The -%d Most Expensive Books: $%.2f%n", N, total);
+            out.printf("Average of The -%d Most Expensive Books: $%.2f%n", N, averagePrice);
+            out.println("============================================================");
+
+            System.out.println("Top " + N + " Most Expensive Books Saved Succesfully To Path: " + outPath);
+
+        } catch (IOException e) {
+            System.out.println("Error Writing: " + e.getMessage());
+        }
     }
 
     // ===== Option 6 (YOU implement): export PRICE STATS =====
