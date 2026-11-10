@@ -1,5 +1,5 @@
 ===========================================================
-TOP 8Most Expensive Books
+Top 8 Most Expensive Books
 ===========================================================
 Rank  Title                          Author                      Price
 ============================================================
@@ -12,6 +12,6 @@ Rank  Title                          Author                      Price
 7     Operating Systems: Three Easy  Remzi Arpaci-Dusseau   $   110.39
 8     Artificial Intelligence: A Mod Stuart Russell         $   110.34
 ============================================================
-Total Value of The -8 Most Expensive Books: $915.98
-Average of The -8 Most Expensive Books: $114.50
+Total Value of The 8 Most Expensive Books: $915.98
+Average of The 8 Most Expensive Books: $114.50
 ============================================================
