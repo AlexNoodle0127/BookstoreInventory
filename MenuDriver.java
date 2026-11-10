@@ -63,11 +63,12 @@ public class MenuDriver {
                 case 3 -> saveAllBooksReport(books);        // Implemented
                 case 4 -> saveCourseReport(books, sc);      // Implemented
                 case 5 -> exportTopN(books, sc);            // Implemented
-                case 6 -> exportPriceStats(books);          // TODO: YOU implement this method
+                case 6 -> exportPriceStats(books);          // Implemented
                 case 0 -> System.out.println("Goodbye!");
                 default -> System.out.println("Please choose a valid option (0–6).");
             }
             System.out.println();
+
         } while (choice != 0);
     }
 
@@ -96,14 +97,16 @@ public class MenuDriver {
 
     /** Prints the main menu. NOTE: only 1–3 are implemented in the starter. */
     private static void printMenu() {
+        System.out.println("==============================================");
         System.out.println("NRCC Bookstore Console");
         System.out.println("1) List all books");
         System.out.println("2) Search by course");
         System.out.println("3) Save ALL BOOKS report");
         System.out.println("4) Save COURSE report (list + totals)");
         System.out.println("5) Export TOP-N most expensive");
-        System.out.println("6) Export PRICE STATS (min/max/avg/median) <-- YOU implement");
+        System.out.println("6) Export PRICE STATS (min/max/avg/median)");
         System.out.println("0) Exit");
+        System.out.println("==============================================");
     }
 
     /** Read an integer with validation, reprompting until valid. */
