@@ -269,22 +269,8 @@ public class MenuDriver {
         }
     }
 
-    // ===== Option 4 (YOU implement): save COURSE report (list + totals) =====
+    // ===== Option 4: save COURSE report (list + totals) =====
 
-
-    /**
-     * TODO: Implement this method.
-     * Requirements recap:
-     *  - Prompt for a course code (case-insensitive).
-     *  - Filter matching rows, but DEDUPLICATE by Title+Author before totaling.
-     *  - Compute Required subtotal, Optional subtotal, and Grand total.
-     *  - Write to src/data/reports/course_<COURSE>_report.txt with:
-     *      • Header (timestamp + course code)
-     *      • Aligned table: Title, Author, Price, Tag ([Required]/[Optional])
-     *      • Totals section
-     *      • Footer "(X unique books; Y duplicates ignored)"
-     *  - Print a friendly console message when done.
-     */
     private static void saveCourseReport(ArrayList<Books> books, Scanner sc) {
         if (books.isEmpty()) {
             System.out.println("No data loaded");
@@ -314,14 +300,18 @@ public class MenuDriver {
             return;
         }
 
+
+    // Defining the required and optional totals as Doubles
         double requiredTotal = 0.0;
         double optionalTotal = 0.0;
 
         String ts = LocalDateTime.now().format(
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 
+        // Defines the path, uses the dir chosen at program startup and then this will use the courseCode as the name with the final file being named "course_ExampleCourse_report.txt"
         Path outPath = Paths.get(REPORTS_DIR, "course_" + courseCode.replace(" ", "_") + "_report.txt");
 
+        // This is what we will be using to export the Course Report
         try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(outPath))) {
 
             out.println("====================================================================================");
@@ -375,19 +365,8 @@ public class MenuDriver {
         }
     }
 
-    // ===== Option 5 (YOU implement): export TOP-N most expensive =====
+    // ===== Option 5: export TOP-N most expensive =====
 
-    /**
-     * TODO: Implement this method.
-     * Requirements recap:
-     *  - Prompt for N; validate 1 <= N <= books.size(); reprompt on bad input.
-     *  - Make a COPY of the list, sort by price DESC, take first N.
-     *  - Write to src/data/reports/topN.txt (e.g., top5.txt) with:
-     *      • Numbered list: Title, Author, Price (aligned)
-     *      • "Top-N total value: $XX.XX"
-     *      • "Average of top N: $YY.YY"
-     *  - Print a friendly console message when done.
-     */
     private static void exportTopN(ArrayList<Books> books, Scanner sc) {
 
         if (books.isEmpty()) {
@@ -424,16 +403,19 @@ public class MenuDriver {
 
         ArrayList<Books> sortedBooks = new ArrayList<>(books);
 
+        // this sorts and compares all the books to see which book costs the most or doesn't cost the most
         sortedBooks.sort((a, b) -> Double.compare(b.getPrice(), a.getPrice()));
 
+        // The path of where its going to
         Path outPath = Paths.get(REPORTS_DIR, "Top" + N + "MostExpensiveBooks" + ".txt");
 
         double total = 0.0;
 
+        // this is what is essentially going into the file
         try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(outPath))) {
 
             out.println("===========================================================");
-            out.println("TOP " + N + "Most Expensive Books");
+            out.println("Top " + N + " Most Expensive Books");
             out.println("===========================================================");
 
             out.printf("%-5s %-30.30s %-22.22s %10s%n",
@@ -455,8 +437,8 @@ public class MenuDriver {
             double averagePrice = total / N;
 
             out.println("============================================================");
-            out.printf("Total Value of The -%d Most Expensive Books: $%.2f%n", N, total);
-            out.printf("Average of The -%d Most Expensive Books: $%.2f%n", N, averagePrice);
+            out.printf("Total Value of The %d Most Expensive Books: $%.2f%n", N, total);
+            out.printf("Average of The %d Most Expensive Books: $%.2f%n", N, averagePrice);
             out.println("============================================================");
 
             System.out.println("Top " + N + " Most Expensive Books Saved Succesfully To Path: " + outPath);
@@ -466,22 +448,72 @@ public class MenuDriver {
         }
     }
 
-    // ===== Option 6 (YOU implement): export PRICE STATS =====
+    // ===== Option 6: export PRICE STATS =====
 
-    /**
-     * TODO: Implement this method.
-     * Requirements recap:
-     *  - Compute Count, Min, Max, Average, Median across ALL books.
-     *    • Median: sort the prices; for even count, average the middle two.
-     *  - Write to src/data/reports/price_stats.txt with two-decimal formatting.
-     *  - Print a friendly console message when done.
-     */
     private static void exportPriceStats(ArrayList<Books> books) {
-        // TODO: Your code here.
-        // HINTS:
-        //   • Collect prices into ArrayList<Double> and Collections.sort ascending.
-        //   • Use printf or String.format("%.2f", value) for two decimals.
-        //   • Path out = Paths.get(REPORTS_DIR, "price_stats.txt")
+
+        if (books.isEmpty()) {
+            System.out.println("No data has been loaded");
+            return;
+        }
+
+        ArrayList<Double> prices = new ArrayList<>();
+
+        double total = 0.0;
+
+        for (Books b : books) {
+            prices.add(b.getPrice());
+            total += b.getPrice();
+        }
+
+        // This sorts the prices to make it easier to get the minimum, maximum and median
+        Collections.sort(prices);
+
+        // this counts how many different types of prices are in the ArrayList prices. (essentially how many books there are and the prices attatched to them)
+        int priceCount = prices.size();
+
+        // Gets the minimum by getting the first value in prices
+        double minimum = prices.get(0);
+
+        // gets the maximum by using the value of priceCount, but instead of using that value, it minuses it by 1 (since the first value starts at "0")
+        double maximum = prices.get(priceCount - 1);
+
+        // gets the average by dividing total by priceCount
+        double average = total / priceCount;
+
+        // This establishes the median
+        double median;
+
+        // This is the calculation to find the median
+        if (priceCount % 2 == 0) {
+            median = (prices.get(priceCount / 2 - 1) + prices.get(priceCount / 2)) / 2.0;
+        } else {
+            median = prices.get(priceCount / 2);
+        }
+
+        // This defines the output path (being REPORTS_DIR) and also names it by calling it "PriceStats.txt")
+        Path outPath = Paths.get(REPORTS_DIR, "PriceStats.txt");
+
+        // This is what is going into that .txt file
+        try (PrintWriter out = new PrintWriter(Files.newBufferedWriter(outPath))) {
+
+            out.println("=========================================================");
+            out.println("                   Price Stats                           ");
+            out.println("=========================================================");
+
+            out.printf("Total No. of Book Prices: %d%n", priceCount);
+            out.printf("Minimum Price: $%.2f%n", minimum);
+            out.printf("Maximum Price: $%.2f%n", maximum);
+            out.printf("Average Price: $%.2f%n", average);
+            out.printf("Median Price:  $%.2f%n", median);
+
+            out.println("=========================================================");
+
+            System.out.println("Price Stats has been successfully saved to: " + outPath);
+
+        } catch (IOException e) {
+            System.out.println("An Error has occured when Exporting Price Stats: " + e.getMessage());
+        }
     }
 
     // ===== Helper you may reuse in case 4 (dedupe by Title + Author) =====
